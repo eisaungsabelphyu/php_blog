@@ -31,9 +31,15 @@ scratch. This page gets rid of all links and provides the needed markup only.
     <!-- Right navbar links -->
     <ul class="navbar-nav ml-auto">
       <!-- Navbar Search -->
+      <?php 
+        $link = $_SERVER['PHP_SELF'];
+        $searchLink = explode('/',$link);
+        $page = end($searchLink);
+       
+      ?>
       <li class="nav-item">
         <div class="navbar-search">
-          <form class="form-inline" action="index.php" method="POST">
+          <form class="form-inline" action="<?php echo $page == 'user.php' ? 'user.php' : 'index.php' ?>" method="POST">
             <div class="input-group input-group-sm">
               <input class="form-control form-control-navbar" name="search" type="search" placeholder="Search" aria-label="Search">
               <div class="input-group-append">
@@ -79,10 +85,18 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="#" class="nav-link">
+            <a href="index.php" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Blogs
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="user.php" class="nav-link">
+              <i class="nav-icon fas fa-th"></i>
+              <p>
+                Users
               </p>
             </a>
           </li>

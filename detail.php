@@ -1,3 +1,49 @@
+<?php 
+session_start();
+require "config/config.php";
+
+if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
+  header ("Location: login.php");
+}
+  $id = $_GET['id'];
+  $stm = $pdo->prepare("SELECT * FROM posts WHERE id=".$id);
+  $stm->execute();
+  $post = $stm->fetchAll();
+
+
+  $stm = $pdo->prepare("SELECT * FROM comments WHERE post_id=".$id);
+  $stm->execute();
+  $cmResult = $stm->fetchAll();
+ 
+
+  $auResult = [];
+  if($cmResult){
+    foreach($cmResult as $key => $value){
+    $user_id = $cmResult[$key]['author_id'];
+    $stmau = $pdo->prepare("SELECT * FROM users WHERE id=".$user_id);
+    $stmau->execute();
+    $auResult[] = $stmau->fetchAll();
+  }
+  }
+   
+
+  if($_POST){
+    
+        $content = $_POST['comment'];
+        $stm = $pdo->prepare("INSERT INTO comments(content,author_id,post_id) VALUES(:content,:author_id,:post_id)");
+        $result = $stm->execute(
+            array(
+                ':content' => $content,
+                ':author_id' => $_SESSION['id'],
+                ':post_id' => $id
+             )
+            );
+          if($result){
+            header ("Location: detail.php?id=");
+          }
+    }
+
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -15,81 +61,51 @@
   <link rel="stylesheet" href="dist/css/adminlte.min.css">
 </head>
 <body class="hold-transition sidebar-mini">
-<div class="wrapper">
-    
-        <div class="row">
+  <div class="wrapper">
+      <div class="content-wrapper" style="margin-left:0px !important">
+        <section class="content-header">
+          <div class="row">
           <div class="col-md-12">
             <!-- Box Comment -->
             <div class="card card-widget">
               <div class="card-header">
-                <div class="user-block">
-                  <img class="img-circle" src="dist/img/user1-128x128.jpg" alt="User Image">
-                  <span class="username"><a href="#">Jonathan Burke Jr.</a></span>
-                  <span class="description">Shared publicly - 7:30 PM Today</span>
-                </div>
-                <!-- /.user-block -->
-                <div class="card-tools">
-                  <button type="button" class="btn btn-tool" title="Mark as read">
-                    <i class="far fa-circle"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="collapse">
-                    <i class="fas fa-minus"></i>
-                  </button>
-                  <button type="button" class="btn btn-tool" data-card-widget="remove">
-                    <i class="fas fa-times"></i>
-                  </button>
+                <div class="card-title" style="text-align:center !important;float:none;">
+                  <h2><?= $post[0]['title'] ?></h2>
                 </div>
                 <!-- /.card-tools -->
               </div>
               <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
-
-                <p>I took this photo this morning. What do you guys think?</p>
-                <button type="button" class="btn btn-default btn-sm"><i class="fas fa-share"></i> Share</button>
-                <button type="button" class="btn btn-default btn-sm"><i class="far fa-thumbs-up"></i> Like</button>
-                <span class="float-right text-muted">127 likes - 3 comments</span>
+              <div class="card-body" style="text-align:center !important;float:none;">
+                <img  class="img-fluid pad" src="admin/images/<?= $post[0]['image'] ?>" alt="Photo">
+                <br><br>
+                <p><?= $post[0]['content'] ?></p>
               </div>
               <!-- /.card-body -->
               <div class="card-footer card-comments">
-                <div class="card-comment">
-                  <!-- User image -->
-                  <img class="img-circle img-sm" src="dist/img/user3-128x128.jpg" alt="User Image">
-
-                  <div class="comment-text">
-                    <span class="username">
-                      Maria Gonzales
-                      <span class="text-muted float-right">8:03 PM Today</span>
-                    </span><!-- /.username -->
-                    It is a long established fact that a reader will be distracted
-                    by the readable content of a page when looking at its layout.
-                  </div>
-                  <!-- /.comment-text -->
+                <div class="d-flex justify-content-between mb-3">
+                  <h3>Comments</h3>
+                  <a href="index.php" class="btn btn-info">Back</a>
                 </div>
-                <!-- /.card-comment -->
                 <div class="card-comment">
-                  <!-- User image -->
-                  <img class="img-circle img-sm" src="dist/img/user4-128x128.jpg" alt="User Image">
-
-                  <div class="comment-text">
+                  <?php if($cmResult){ ?>
+                  <div class="comment-text" style="margin-left:0px !important;">
+                    <?php foreach($cmResult as $key => $value){ ?>
                     <span class="username">
-                      Luna Stark
-                      <span class="text-muted float-right">8:03 PM Today</span>
+                      <?= $auResult[$key][0]['name'] ?>
+                      <span class="text-muted float-right"><?= $value['created_at'] ?></span>
                     </span><!-- /.username -->
-                    It is a long established fact that a reader will be distracted
-                    by the readable content of a page when looking at its layout.
+                     <?= $value['content'] ?>
+                    <?php }?>
+                    <!-- /.comment-text -->
                   </div>
-                  <!-- /.comment-text -->
                 </div>
-                <!-- /.card-comment -->
+                  <?php } ?>
               </div>
               <!-- /.card-footer -->
-              <div class="card-footer">
-                <form action="#" method="post">
-                  <img class="img-fluid img-circle img-sm" src="dist/img/user4-128x128.jpg" alt="Alt Text">
-                  <!-- .img-push is used to add margin to elements next to floating images -->
+              <div class="card-footer" style="margin-left:0px !important;">
+                <form action="" method="post">
                   <div class="img-push">
-                    <input type="text" class="form-control form-control-sm" placeholder="Press enter to post comment">
+                    <input type="text" name="comment" class="form-control form-control-sm" placeholder="Press enter to post comment">
                   </div>
                 </form>
               </div>
@@ -100,14 +116,18 @@
           <!-- /.col -->
           <!-- /.col -->
         </div>
-</div>
+        </section>
+      </div>
+  </div>
   <!-- /.content-wrapper -->
 
-  <footer class="main-footer">
-    <div class="float-right d-none d-sm-block">
-      <b>Version</b> 3.2.0
+  <footer class="main-footer" style="margin-left:0px !important;">
+    <!-- To the right -->
+    <div class="float-right d-none d-sm-inline">
+      <a href="logout.php" class="btn btn-default">Logout</a>
     </div>
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+    <!-- Default to the left -->
+    <strong>Copyright &copy; 2023 <a href="#"></a>Coder</strong> All rights reserved.
   </footer>
 
   <!-- Control Sidebar -->

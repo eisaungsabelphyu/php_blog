@@ -1,8 +1,16 @@
 <?php 
 session_start();
 require "../config/config.php";
+
 if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] != 1){
   header("Location: login.php");
+}
+if(!empty($_POST['search'])){
+  setcookie('search', $_POST['search'], time() + (86400 * 30), "/");
+}else{
+  if(empty($_GET['pageno'])){
+    setcookie('search', "", time() - 3600);
+  }
 }
 ?>
 <?php include ("layouts\header.php"); ?>
@@ -13,7 +21,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] 
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Starter Page</h1>
+            <h1 class="m-0">User List Page</h1>
           </div><!-- /.col -->
           
         </div><!-- /.row -->
@@ -28,7 +36,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] 
           <div class="col-md-12">
             <div class="card">
               <div class="card-header">
-                <h3 class="card-title">Bordered Table</h3>
+                <h3 class="card-title">User Table</h3>
               </div>
               <!-- /.card-header -->
               <div class="card-body">
@@ -42,41 +50,43 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] 
                           $offset = ($pageno -1) * $numOfrec;
 
                           if(empty($_POST['search'])){
-                            $stm = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+                            $stm = $pdo->prepare("SELECT * FROM users ORDER BY id DESC");
                             $stm->execute();
                             $rawResult = $stm->fetchAll();
                             $totalpages = ceil(count($rawResult) / $numOfrec);
                             
-                            $stm = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfrec");
-                            $stm->execute();
-                            $data = $stm->fetchAll();
-                          }else{
-                            $search = $_POST['search'];
-                            $stm = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$search%' ORDER BY id DESC");
-                            $stm->execute();
-                            $rawResult = $stm->fetchAll();
-                            $totalpages = ceil(count($rawResult) / $numOfrec);
-                            
-                            $stm = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$search%' ORDER BY id DESC LIMIT $offset,$numOfrec");
+                            $stm = $pdo->prepare("SELECT * FROM users ORDER BY id DESC LIMIT $offset,$numOfrec");
                             $stm->execute();
                             $data = $stm->fetchAll();
                             
                           }
-
-                          
-
-
+                          else
+                          {
+                            $search = empty($_POST['search']) ? $_COOKIE['search'] : $_POST['search'];
+                            
+                            $stm = $pdo->prepare("SELECT * FROM users WHERE user_name LIKE '%$search%' ORDER BY id DESC");
+                            $stm->execute();
+                            $rawResult = $stm->fetchAll();
+                           
+                            $totalpages = ceil(count($rawResult) / $numOfrec);
+                            
+                            $stm = $pdo->prepare("SELECT * FROM users WHERE user_name LIKE '%$search%' ORDER BY id DESC LIMIT $offset,$numOfrec");
+                            $stm->execute();
+                            $data = $stm->fetchAll();
+                            
+                          }
                   
                 ?>
                 <div class="mb-3">
-                  <a href="add.php" class="btn btn-success" >New Blog Post</a>
+                  <a href="userCreate.php" class="btn btn-success" >New User Create</a>
                 </div>
                 <table class="table table-bordered">
                   <thead>
                     <tr>
                       <th style="width: 10px">#</th>
-                      <th>Title</th>
-                      <th >Content</th>
+                      <th>Name</th>
+                      <th>Email</th>
+                      <th>Role</th>
                       <th>Actions</th>
                     </tr>
                   </thead>
@@ -84,15 +94,16 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] 
                    <?php 
                    if($data){
                    $i = 1;
-                   foreach($data as $post){
+                   foreach($data as $user){
                    ?>
                     <tr>
                       <td><?= $i ?></td>
-                      <td><?= $post['title'] ?></td>
-                      <td><?= substr($post['content'],0,50) ?></td>
+                      <td><?= $user['user_name'] ?></td>
+                      <td><?= $user['email'] ?></td>
+                      <td><?php if($user['role'] == 1) {echo 'admin';}else{ echo 'user';} ?></td>
                       <td>
-                         <a href="edit.php?id=<?= $post['id'] ?>" type="button" class="btn btn-warning ">Edit</a>
-                         <a href="delete.php?id=<?= $post['id'] ?>" type="button" class="btn btn-danger">Delete</a>
+                         <a href="userEdit.php?id=<?= $user['id'] ?>" type="button" class="btn btn-warning ">Edit</a>
+                         <a href="userDelete.php?id=<?= $user['id'] ?>" type="button" class="btn btn-danger">Delete</a>
                       </td>
                     </tr>
                    <?php 

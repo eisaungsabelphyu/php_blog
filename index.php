@@ -1,3 +1,11 @@
+<?php 
+session_start();
+require "config/config.php";
+
+if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
+  header ("Location: login.php");
+}
+?>
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -17,148 +25,84 @@
 <body class="hold-transition sidebar-mini">
 <div class="wrapper">
 
+<?php 
+  if(!empty($_GET['pageno'])){
+    $pageno = $_GET['pageno'];
+  }else{
+    $pageno = 1;
+  }
+  $numOfRec = 6;
+  $offset = ($pageno - 1) * $numOfRec;
 
+
+  $stm = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC");
+  $stm->execute();
+  $totalResult = $stm->fetchAll();
+  $totalpages = ceil(count($totalResult) / $numOfRec);
+
+  $stm = $pdo->prepare("SELECT * FROM posts ORDER BY id DESC LIMIT $offset,$numOfRec");
+  $stm->execute();
+  $posts = $stm->fetchAll();
+
+?>
   <!-- Content Wrapper. Contains page content -->
-  <div class="content-wrapper" style="margin-left:0 !important">
+    <div class="content-wrapper" style="margin:auto !important;">
 
         <h3 class="mt-4 mb-4" style="text-align:center;">Social Widgets</h3>
         <div class="row">
+          <?php 
+          if($posts){
+            foreach($posts as $post){
+          ?>
           <div class="col-md-4">
             <!-- Box Comment -->
-            <div class="card card-widget">
+            <div class="card card-widget"  >
               <div class="card-header">
                 <div class="card-title" style="text-align:center !important;float:none">
-                    <h4>Blog Title</h4>
+                    <h4><?= $post['title'] ?></h4>
                 </div>
                 <!-- /.user-block -->
                 <!-- /.card-tools -->
               </div>
               <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
-
-                <p>I took this photo this morning. What do you guys think?</p>
-                
+              <div class="card-body" style="margin:auto !important;">
+                <a href="detail.php?id=<?= $post['id'] ?>"><img class="img-fluid pad" style="height: 200px !important" src="admin/images/<?= $post['image'] ?>" alt="Photo"></a> 
               </div>
               
             </div>
             <!-- /.card -->
           </div>
-             <div class="col-md-4">
-            <!-- Box Comment -->
-            <div class="card card-widget">
-              <div class="card-header">
-                <div class="card-title" style="text-align:center !important;float:none">
-                    <h4>Blog Title</h4>
-                </div>
-                <!-- /.user-block -->
-                <!-- /.card-tools -->
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
-
-                <p>I took this photo this morning. What do you guys think?</p>
-                
-              </div>
-              
-            </div>
-            <!-- /.card -->
-          </div>
-             <div class="col-md-4">
-            <!-- Box Comment -->
-            <div class="card card-widget">
-              <div class="card-header">
-                <div class="card-title" style="text-align:center !important;float:none">
-                    <h4>Blog Title</h4>
-                </div>
-                <!-- /.user-block -->
-                <!-- /.card-tools -->
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
-
-                <p>I took this photo this morning. What do you guys think?</p>
-                
-              </div>
-              
-            </div>
-            <!-- /.card -->
-          </div>
+          <?php 
+                }
+             }
+          ?>
         </div>
-        <div class="row">
-          <div class="col-md-4">
-            <!-- Box Comment -->
-            <div class="card card-widget">
-              <div class="card-header">
-                <div class="card-title" style="text-align:center !important;float:none">
-                    <h4>Blog Title</h4>
-                </div>
-                <!-- /.user-block -->
-                <!-- /.card-tools -->
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
-
-                <p>I took this photo this morning. What do you guys think?</p>
-                
-              </div>
-              
-            </div>
-            <!-- /.card -->
-          </div>
-             <div class="col-md-4">
-            <!-- Box Comment -->
-            <div class="card card-widget">
-              <div class="card-header">
-                <div class="card-title" style="text-align:center !important;float:none">
-                    <h4>Blog Title</h4>
-                </div>
-                <!-- /.user-block -->
-                <!-- /.card-tools -->
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
-
-                <p>I took this photo this morning. What do you guys think?</p>
-                
-              </div>
-              
-            </div>
-            <!-- /.card -->
-          </div>
-             <div class="col-md-4">
-            <!-- Box Comment -->
-            <div class="card card-widget">
-              <div class="card-header">
-                <div class="card-title" style="text-align:center !important;float:none">
-                    <h4>Blog Title</h4>
-                </div>
-                <!-- /.user-block -->
-                <!-- /.card-tools -->
-              </div>
-              <!-- /.card-header -->
-              <div class="card-body">
-                <img class="img-fluid pad" src="dist/img/photo2.png" alt="Photo">
-
-                <p>I took this photo this morning. What do you guys think?</p>
-                
-              </div>
-              
-            </div>
-            <!-- /.card -->
-          </div>
-        </div>
+        <nav aria-label="Page navigation example">
+          <ul class="pagination justify-content-end mt-3 mr-3">
+            <li class="page-item ">
+              <a class="page-link" href="?pageno=1">First</a>
+            </li>
+            <li class="page-item <?php if($pageno <= 1) { echo 'disabled';} ?>">
+              <a class="page-link" href="<?php if($pageno <= 1) { echo '#';}else{ echo '?pageno='.$pageno-1;} ?>" >Previous</a>
+            </li>
+            <li class="page-item"><a class="page-link" href="#<?= $pageno ?>">1</a></li>
+            <li class="page-item <?php if($pageno >= $totalpages) {echo 'disabled';} ?>">
+              <a class="page-link" href="<?php if($pageno >= $totalpages) {echo '#';}else{ echo '?pageno='.$pageno+1;} ?>">Next</a>
+            </li>
+            <li class="page-item">
+              <a class="page-link" href="?pageno<?= $totalpages ?>".>Last</a>
+            </li>
+          </ul>
+      </nav>
         <!-- /.row -->
 
-  <footer class="main-footer" style="">
-    <div class="float-right d-none d-sm-block">
-      <b>Version</b> 3.2.0
+  <footer class="main-footer" style="margin-left:0px !important;">
+    <!-- To the right -->
+    <div class="float-right d-none d-sm-inline">
+      <a href="logout.php" class="btn btn-default">Logout</a>
     </div>
-    <strong>Copyright &copy; 2014-2021 <a href="https://adminlte.io">AdminLTE.io</a>.</strong> All rights reserved.
+    <!-- Default to the left -->
+    <strong>Copyright &copy; 2023 <a href="#"></a>Coder</strong> All rights reserved.
   </footer>
 
   <!-- Control Sidebar -->

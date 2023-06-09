@@ -2,7 +2,7 @@
 session_start();
 require "../config/config.php";
 
-if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
+if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] != 1){
   header("Location: login.php");
 }
 
@@ -34,7 +34,7 @@ if($_POST){
     }
 }
 ?>
-<?php include ("layouts\header.html"); ?>
+<?php include ("layouts\header.php"); ?>
 <div class="content-wrapper">
     <!-- Content Header (Page header) -->
     <div class="content-header">
@@ -77,5 +77,5 @@ if($_POST){
     </div>
 </div>
    
-<?php include ("layouts/footer.html"); ?>
+<?php include ("layouts/footer.php"); ?>
  
