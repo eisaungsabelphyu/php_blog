@@ -98,8 +98,8 @@ if(!empty($_POST['search'])){
                    ?>
                     <tr>
                       <td><?= $i ?></td>
-                      <td><?= $user['user_name'] ?></td>
-                      <td><?= $user['email'] ?></td>
+                      <td><?= escape($user['user_name']) ?></td>
+                      <td><?= escape($user['email']) ?></td>
                       <td><?php if($user['role'] == 1) {echo 'admin';}else{ echo 'user';} ?></td>
                       <td>
                          <a href="userEdit.php?id=<?= $user['id'] ?>" type="button" class="btn btn-warning ">Edit</a>

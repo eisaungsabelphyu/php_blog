@@ -73,11 +73,11 @@ if($_POST){
                 <input type="hidden" name="id" value="<?= $post[0]['id'] ?>">
                 <div class="form-group">
                     <label>Name</label><p class="text-danger"><?php echo empty($nameErr) ? '' :'*'.$nameErr; ?></p>
-                    <input type="text" class="form-control" name="name" value="<?= $post[0]['user_name']; ?>" >
+                    <input type="text" class="form-control" name="name" value="<?= escape($post[0]['user_name']) ?>" >
                 </div>
                 <div class="form-group">
                     <label>Email</label><p class="text-danger"><?php echo empty($mailErr) ? '' :'*'.$mailErr; ?></p>
-                    <input type="email" class="form-control" name="email" value="<?= $post[0]['email']; ?>">
+                    <input type="email" class="form-control" name="email" value="<?= escape($post[0]['email']) ?>">
                 </div>
                 <div class="form-group">
                     <div class="form-check">

@@ -6,13 +6,14 @@ require "config/common.php";
 if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
   header ("Location: login.php");
 }
-  $id = $_GET['id'];
-  $stm = $pdo->prepare("SELECT * FROM posts WHERE id=".$id);
-  $stm->execute();
-  $post = $stm->fetchAll();
+  
+  $stmt = $pdo->prepare("SELECT * FROM posts WHERE id=".$_GET['id']);
+  $stmt->execute();
+  $post = $stmt->fetchAll();
+  
 
-
-  $stm = $pdo->prepare("SELECT * FROM comments WHERE post_id=".$id);
+  $blogId = $_GET['id'];
+  $stm = $pdo->prepare("SELECT * FROM comments WHERE post_id=$blogId");
   $stm->execute();
   $cmResult = $stm->fetchAll();
  
@@ -21,7 +22,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
   if($cmResult){
     foreach($cmResult as $key => $value){
     $user_id = $cmResult[$key]['author_id'];
-    $stmau = $pdo->prepare("SELECT * FROM users WHERE id=".$user_id);
+    $stmau = $pdo->prepare("SELECT * FROM users WHERE id=$user_id");
     $stmau->execute();
     $auResult[] = $stmau->fetchAll();
     
@@ -39,11 +40,11 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
             array(
                 ':content' => $content,
                 ':author_id' => $_SESSION['id'],
-                ':post_id' => $id
+                ':post_id' => $blogId
              )
             );
           if($result){
-            header ("Location: detail.php?id=");
+            header ("Location: detail.php?id=".$blogId);
           }
     }
     }
@@ -75,7 +76,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
             <div class="card card-widget">
               <div class="card-header">
                 <div class="card-title" style="text-align:center !important;float:none;">
-                  <h2><?= $post[0]['title'] ?></h2>
+                  <h2><?= escape($post[0]['title']) ?></h2>
                 </div>
                 <!-- /.card-tools -->
               </div>
@@ -83,7 +84,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
               <div class="card-body" style="text-align:center !important;float:none;">
                 <img  class="img-fluid pad" src="admin/images/<?= $post[0]['image'] ?>" alt="Photo">
                 <br><br>
-                <p><?= $post[0]['content'] ?></p>
+                <p><?= escape($post[0]['content']) ?></p>
               </div>
               <!-- /.card-body -->
               <div class="card-footer card-comments">
@@ -96,10 +97,10 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
                   <div class="comment-text" style="margin-left:0px !important;">
                     <?php foreach($cmResult as $key => $value){ ?>
                     <span class="username">
-                      <?= $auResult[$key][0]['user_name'] ?>
-                      <span class="text-muted float-right"><?= $value['created_at'] ?></span>
+                      <?= escape($auResult[$key][0]['user_name']) ?>
+                      <span class="text-muted float-right"><?= escape($value['created_at']) ?></span>
                     </span><!-- /.username -->
-                     <?= $value['content'] ?>
+                     <?= escape($value['content']) ?>
                     <?php }?>
                     <!-- /.comment-text -->
                   </div>

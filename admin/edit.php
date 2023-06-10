@@ -79,19 +79,19 @@ if($_POST){
             <div class="card">
             <form action="" method="POST" enctype="multipart/form-data">
               <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
-                <input type="hidden" name="id" value="<?= $post[0]['id'] ?>">
+                <input type="hidden" name="id" value="<?= escape($post[0]['id']) ?>">
                 <div class="form-group">
                     <label>Title</label><p class="text-danger"><?php echo empty($titleErr) ? '' :'*'.$titleErr; ?></p>
-                    <input type="text" class="form-control" name="title" value="<?= $post[0]['title']; ?>">
+                    <input type="text" class="form-control" name="title" value="<?= escape($post[0]['title']) ?>">
                 </div>
                 <div class="form-group">
                     <label>Content</label><br>
-                    <textarea type="text" class="form-control" name="content" rows="8" cols="80"><?= $post[0]['content']; ?></textarea>
+                    <textarea type="text" class="form-control" name="content" rows="8" cols="80"><?= escape($post[0]['content']) ?></textarea>
                 </div>
                 <div class="form-group">
                     <label>Image</label><br>
                     <input type="file" class="form-control" name="image">
-                    <img src="images/<?= $post[0]['image']; ?>" class="img-thumbnail" width="100px" height="100px">
+                    <img src="images/<?= $post[0]['image'] ?>" class="img-thumbnail" width="100px" height="100px">
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Submit</button>
