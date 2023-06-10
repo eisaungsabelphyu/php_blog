@@ -7,6 +7,18 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] 
 }
 
 if($_POST){
+  if(empty($_POST['title']) || empty($_FILES['image']['name']) || empty($_POST['content'])){
+    if(empty($_POST['title'])){
+            $titleErr = "Title field cannot be null";
+        }
+        if(empty($_FILES['image']['name'])){
+            $imageErr = "Image field cannot be null";
+        }
+        if(empty($_POST['content'])){
+        $contentErr = "Content field cannot be null";
+      }
+  }else{
+    
     $file = 'images/'.($_FILES['image']['name']);
     $imgType = pathInfo($file,PATHINFO_EXTENSION);
 
@@ -32,6 +44,7 @@ if($_POST){
 
         }
     }
+  }
 }
 ?>
 <?php include ("layouts\header.php"); ?>
@@ -54,16 +67,16 @@ if($_POST){
             <div class="card">
             <form action="add.php" method="POST" enctype="multipart/form-data">
                 <div class="form-group">
-                    <label>Title</label><br>
-                    <input type="text" class="form-control" name="title" value="" required>
+                    <label>Title</label><p class="text-danger"><?php echo empty($titleErr) ? '' :'*'.$titleErr; ?></p>
+                    <input type="text" class="form-control" name="title" value="" >
                 </div>
                 <div class="form-group">
-                    <label>Content</label><br>
+                    <label>Content</label><p class="text-danger"><?php echo empty($contentErr) ? '' :'*'.$contentErr; ?></p>
                     <textarea type="text" class="form-control" name="content" rows="8" cols="80"></textarea>
                 </div>
                 <div class="form-group">
-                    <label>Image</label><br>
-                    <input type="file" class="form-control" name="image" value="" required>
+                    <label>Image</label><p class="text-danger"><?php echo empty($imageErr) ? '' :'*'.$imageErr; ?></p>
+                    <input type="file" class="form-control" name="image" value="" >
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Submit</button>

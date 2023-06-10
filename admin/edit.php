@@ -4,12 +4,20 @@ require "../config/config.php";
 
 if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] != 1){
   header("Location: login.php");
-}
+} 
+
 if($_POST){
-    
-    $title = $_POST['title'];
-    $content = $_POST['content'];
-    $id = $_POST['id'];
+    if(empty($_POST['title']) || empty($_POST['content'])){
+      if(empty($_POST['title'])){
+         $titleErr = "Title field cannot be null";
+      }
+      if(empty($_POST['content'])){
+        $contentErr = "Content field cannot be null";
+      }
+    }else{
+      $title = $_POST['title'];
+      $content = $_POST['content'];
+      $id = $_POST['id'];
    
    
     if($_FILES['image']['name'] != null){
@@ -42,15 +50,13 @@ if($_POST){
             echo "<script>alert('Successfully Updated');window.location.href='index.php';</script>";
         }
     }
-}else{
-  $id = $_GET['id'];
-  $stm = $pdo->prepare("SELECT * FROM posts WHERE id=".$id);
-  $stm->execute();
-  $post = $stm->fetchAll();
+    }
 }
-
-
-
+//for show data
+    $id = $_GET['id'];
+    $stm = $pdo->prepare("SELECT * FROM posts WHERE id=".$id);
+    $stm->execute();
+    $post = $stm->fetchAll();
 ?>
 <?php include ("layouts\header.php"); ?>
 <div class="content-wrapper">
@@ -70,20 +76,20 @@ if($_POST){
         <div class="row">
           <div class="col-md-12">
             <div class="card">
-            <form action="edit.php" method="POST" enctype="multipart/form-data">
+            <form action="" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="id" value="<?= $post[0]['id'] ?>">
                 <div class="form-group">
-                    <label>Title</label><br>
-                    <input type="text" class="form-control" name="title" value="<?= $post[0]['title'] ?>" required>
+                    <label>Title</label><p class="text-danger"><?php echo empty($titleErr) ? '' :'*'.$titleErr; ?></p>
+                    <input type="text" class="form-control" name="title" value="<?= $post[0]['title']; ?>">
                 </div>
                 <div class="form-group">
                     <label>Content</label><br>
-                    <textarea type="text" class="form-control" name="content" rows="8" cols="80"><?= $post[0]['content'] ?></textarea>
+                    <textarea type="text" class="form-control" name="content" rows="8" cols="80"><?= $post[0]['content']; ?></textarea>
                 </div>
                 <div class="form-group">
                     <label>Image</label><br>
                     <input type="file" class="form-control" name="image">
-                    <img src="images/<?= $post[0]['image'] ?>" class="img-thumbnail" width="100px" height="100px">
+                    <img src="images/<?= $post[0]['image']; ?>" class="img-thumbnail" width="100px" height="100px">
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Submit</button>

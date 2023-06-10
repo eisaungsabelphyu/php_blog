@@ -28,8 +28,10 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
    
 
   if($_POST){
-    
-        $content = $_POST['comment'];
+    if(empty($_POST['comment'])){
+      $cmtErr = "Comment must be filled";
+    }else{
+      $content = $_POST['comment'];
         $stm = $pdo->prepare("INSERT INTO comments(content,author_id,post_id) VALUES(:content,:author_id,:post_id)");
         $result = $stm->execute(
             array(
@@ -41,6 +43,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
           if($result){
             header ("Location: detail.php?id=");
           }
+    }
     }
 
 ?>
@@ -105,6 +108,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
               <div class="card-footer" style="margin-left:0px !important;">
                 <form action="" method="post">
                   <div class="img-push">
+                    <p class="text-danger"><?php echo empty($cmtErr) ? '' :'*'.$cmtErr; ?></p>
                     <input type="text" name="comment" class="form-control form-control-sm" placeholder="Press enter to post comment">
                   </div>
                 </form>

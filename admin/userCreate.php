@@ -7,7 +7,20 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] 
 }
 
 if($_POST){
-
+    if(empty($_POST['name']) || empty($_POST['email']) || empty($_POST['password']) || strlen($_POST['password'])< 4){
+        if(empty($_POST['name'])){
+            $nameErr = "Name field cannot be null";
+        }
+        if(empty($_POST['email'])){
+            $mailErr = "Email field cannot be null";
+        }
+        if(empty($_POST['password'])){
+            $passErr = "Password field cannot be null";
+        }
+        if(strlen($_POST['password'])< 4){
+            $passErr = "Password must be at least 4 character";
+        }
+    }else{
         $name = $_POST['name'];
         $email = $_POST['email'];
         $role = $_POST['role'];
@@ -27,6 +40,7 @@ if($_POST){
             echo "<script>alert('Successfully added');window.location.href='user.php'</script>";
 
         }
+    }
     }
 
 ?>
@@ -51,12 +65,12 @@ if($_POST){
             <form action="" method="POST" enctype="multipart/form-data">
                 <input type="hidden" name="id">
                 <div class="form-group">
-                    <label>Name</label><br>
-                    <input type="text" class="form-control" name="name"  required>
+                    <label>Name</label><p class="text-danger"><?php echo empty($nameErr) ? '' :'*'.$nameErr; ?></p> 
+                    <input type="text" class="form-control" name="name"  >
                 </div>
                 <div class="form-group">
-                    <label>Email</label><br>
-                    <input type="email" class="form-control" name="email"  required>
+                    <label>Email</label><p class="text-danger"><?php echo empty($mailErr) ? '' :'*'.$mailErr; ?></p>
+                    <input type="email" class="form-control" name="email"  >
                 </div>
                 <div class="form-group">
                     <div class="form-check">
@@ -73,8 +87,8 @@ if($_POST){
                     </div>
                 </div>
                 <div class="form-group">
-                    <label>Password</label><br>
-                    <input type="password" class="form-control" name="password"  required>
+                    <label>Password</label><p class="text-danger"><?php echo empty($passErr) ? '' :'*'.$passErr; ?></p>
+                    <input type="password" class="form-control" name="password">
                 </div>
                 <div class="form-group">
                     <button type="submit" class="btn btn-primary">Submit</button>

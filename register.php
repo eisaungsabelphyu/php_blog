@@ -2,7 +2,18 @@
 require "config/config.php";
 
 if($_POST){
-    $name = $_POST['name'];
+    if(empty($_POST['name']) || empty($_POST['email']) || empty($_POST['password'])){
+      if(empty($_POST['name'])){
+        $nameErr = "Name field cannot be null";
+      }
+      if(empty($_POST['email'])){
+        $mailErr = "Mail field cannot be null";
+      }
+      if(empty($_POST['password'])){
+        $passwordErr = "Password field cannot be null";
+      }
+    }else{
+      $name = $_POST['name'];
     $email = $_POST['email'];
     $password = $_POST['password'];
 
@@ -31,6 +42,7 @@ if($_POST){
             echo "<script>alert('Successfully Register.Now you can login');window.location.href='login.php'</script>";
 
         }
+    }
     }
 }
 
@@ -63,8 +75,9 @@ if($_POST){
       <p class="login-box-msg">Create Account</p>
 
       <form action="register.php" method="post">
+        <p class="text-danger"><?php echo empty($nameErr) ? '' :'*'.$nameErr; ?></p>
         <div class="input-group mb-3">
-          <input type="text" name="name" class="form-control" placeholder="Name" required>
+          <input type="text" name="name" class="form-control" placeholder="Name" >
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
@@ -72,16 +85,19 @@ if($_POST){
           </div>
         </div>
 
+        <p class="text-danger"><?php echo empty($mailErr) ? '' :'*'.$mailErr; ?></p>
         <div class="input-group mb-3">
-          <input type="email" name="email" class="form-control" placeholder="Email" required>
+          <input type="email" name="email" class="form-control" placeholder="Email" >
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-envelope"></span>
             </div>
           </div>
         </div>
+
+        <p class="text-danger"><?php echo empty($passwordErr) ? '' :'*'.$passwordErr; ?></p>
         <div class="input-group mb-3">
-          <input type="password" name="password" class="form-control" placeholder="Password" required>
+          <input type="password" name="password" class="form-control" placeholder="Password" >
           <div class="input-group-append">
             <div class="input-group-text">
               <span class="fas fa-lock"></span>

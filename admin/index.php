@@ -4,6 +4,13 @@ require "../config/config.php";
 if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] != 1){
   header("Location: login.php");
 }
+if(!(empty($_POST['search']))){
+  setcookie('search',$_POST['search'],time() + (86400 * 30), "/");
+}else{
+  if(empty($_GET['pageno'])){
+    setcookie('search', "", time() - 3600);
+  }
+}
 ?>
 <?php include ("layouts\header.php"); ?>
   <!-- Content Wrapper. Contains page content -->
@@ -51,7 +58,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] 
                             $stm->execute();
                             $data = $stm->fetchAll();
                           }else{
-                            $search = $_POST['search'];
+                            $search = empty($_POST['search']) ? $_COOKIE['search'] : $_POST['search'];
                             $stm = $pdo->prepare("SELECT * FROM posts WHERE title LIKE '%$search%' ORDER BY id DESC");
                             $stm->execute();
                             $rawResult = $stm->fetchAll();
