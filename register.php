@@ -1,5 +1,6 @@
 <?php 
 require "config/config.php";
+require "config/common.php";
 
 if($_POST){
     if(empty($_POST['name']) || empty($_POST['email']) || empty($_POST['password'])){
@@ -75,6 +76,7 @@ if($_POST){
       <p class="login-box-msg">Create Account</p>
 
       <form action="register.php" method="post">
+        <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
         <p class="text-danger"><?php echo empty($nameErr) ? '' :'*'.$nameErr; ?></p>
         <div class="input-group mb-3">
           <input type="text" name="name" class="form-control" placeholder="Name" >

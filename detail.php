@@ -1,6 +1,7 @@
 <?php 
 session_start();
 require "config/config.php";
+require "config/common.php";
 
 if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
   header ("Location: login.php");
@@ -23,6 +24,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
     $stmau = $pdo->prepare("SELECT * FROM users WHERE id=".$user_id);
     $stmau->execute();
     $auResult[] = $stmau->fetchAll();
+    
   }
   }
    
@@ -94,7 +96,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
                   <div class="comment-text" style="margin-left:0px !important;">
                     <?php foreach($cmResult as $key => $value){ ?>
                     <span class="username">
-                      <?= $auResult[$key][0]['name'] ?>
+                      <?= $auResult[$key][0]['user_name'] ?>
                       <span class="text-muted float-right"><?= $value['created_at'] ?></span>
                     </span><!-- /.username -->
                      <?= $value['content'] ?>
@@ -107,6 +109,7 @@ if(empty($_SESSION['id']) || empty($_SESSION['logged_in'])){
               <!-- /.card-footer -->
               <div class="card-footer" style="margin-left:0px !important;">
                 <form action="" method="post">
+                  <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                   <div class="img-push">
                     <p class="text-danger"><?php echo empty($cmtErr) ? '' :'*'.$cmtErr; ?></p>
                     <input type="text" name="comment" class="form-control form-control-sm" placeholder="Press enter to post comment">

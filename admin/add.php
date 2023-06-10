@@ -1,6 +1,7 @@
 <?php 
 session_start();
 require "../config/config.php";
+require "../config/common.php";
 
 if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] != 1){
   header("Location: login.php");
@@ -66,6 +67,7 @@ if($_POST){
           <div class="col-md-12">
             <div class="card">
             <form action="add.php" method="POST" enctype="multipart/form-data">
+              <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
                 <div class="form-group">
                     <label>Title</label><p class="text-danger"><?php echo empty($titleErr) ? '' :'*'.$titleErr; ?></p>
                     <input type="text" class="form-control" name="title" value="" >
