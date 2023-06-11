@@ -25,7 +25,7 @@ if($_POST){
         $name = $_POST['name'];
         $email = $_POST['email'];
         $role = $_POST['role'];
-        $password = $_POST['password'];
+        $password = password_hash($_POST['password'],PASSWORD_DEFAULT);
        
 
         $stm = $pdo->prepare("INSERT INTO users(user_name,email,password,role) VALUES(:user_name,:email,:password,:role)");

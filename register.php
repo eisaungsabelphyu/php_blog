@@ -1,4 +1,5 @@
 <?php 
+session_start();
 require "config/config.php";
 require "config/common.php";
 
@@ -15,8 +16,8 @@ if($_POST){
       }
     }else{
       $name = $_POST['name'];
-    $email = $_POST['email'];
-    $password = $_POST['password'];
+      $email = $_POST['email'];
+      $password =  password_hash($_POST['password'],PASSWORD_DEFAULT);
 
     $stm = $pdo->prepare("SELECT * FROM users WHERE email=:email");
     $stm->bindValue(':email',$email);
@@ -26,14 +27,10 @@ if($_POST){
     if($user){
         echo "<script>alert('Email duplicated!');</script>";
     }else{
-        $name = $_POST['name'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-
-        $stm = $pdo->prepare("INSERT INTO users(name,email,password,role) VALUES(:name,:email,:password,:role)");
+        $stm = $pdo->prepare("INSERT INTO users(user_name,email,password,role) VALUES(:user_name,:email,:password,:role)");
         $result = $stm->execute(
             array(
-                ':name' => $name,
+                ':user_name' => $name,
                 ':email' => $email,
                 ':password' => $password,
                 ':role' => 0

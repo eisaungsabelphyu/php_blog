@@ -1,6 +1,7 @@
 <?php 
 session_start();
 require "../config/config.php";
+require "../config/common.php";
 
 if(empty($_SESSION['id']) || empty($_SESSION['logged_in']) || $_SESSION['role'] != 1){
   header("Location: login.php");

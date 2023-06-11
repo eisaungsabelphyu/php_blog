@@ -40,6 +40,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
       <li class="nav-item">
         <div class="navbar-search">
           <form class="form-inline" action="<?php echo $page == 'user.php' ? 'user.php' : 'index.php' ?>" method="POST">
+            <input type="hidden" name="csrf_token" value="<?= $_SESSION['csrf_token'] ?>">
             <div class="input-group input-group-sm">
               <input class="form-control form-control-navbar" name="search" type="search" placeholder="Search" aria-label="Search">
               <div class="input-group-append">
@@ -85,7 +86,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
           <!-- Add icons to the links using the .nav-icon class
                with font-awesome or any other icon font library -->
           <li class="nav-item">
-            <a href="index.php" class="nav-link">
+            <a href="/admin/index.php" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Blogs
@@ -93,7 +94,7 @@ scratch. This page gets rid of all links and provides the needed markup only.
             </a>
           </li>
           <li class="nav-item">
-            <a href="user.php" class="nav-link">
+            <a href="/admin/user.php" class="nav-link">
               <i class="nav-icon fas fa-th"></i>
               <p>
                 Users
